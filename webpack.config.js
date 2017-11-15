@@ -8,7 +8,6 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 var HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
-var HashedModuleIdsPlugin = webpack.HashedModuleIdsPlugin;
 var NoEmitOnErrorsPlugin = webpack.NoEmitOnErrorsPlugin;
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var DefinePlugin = webpack.DefinePlugin;
@@ -23,12 +22,12 @@ var externals = {
     }
     /*
      *   配置html文件路径  
-     *   每个页面文件夹的入口html名称
-     *   每个页面独自js所在文件夹的外层路径
+     *   每个页面的入口html名称
+     *   配置js文件路径
      *   通用js文件夹
      *   每个页面的入口js
      *   默认打开的页面
-     *    端口号
+     *   端口号
      */
 var customConfig = {
     htmlDir: 'pages',
