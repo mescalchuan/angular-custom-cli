@@ -1,11 +1,14 @@
 var path = require('path');
 var fs = require('fs');
 var webpack = require('webpack');
+var mock2easy = require('mock2easy');
 
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+//解决angular压缩后代码无法运行的问题
+var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 var HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 var NoEmitOnErrorsPlugin = webpack.NoEmitOnErrorsPlugin;
@@ -37,7 +40,18 @@ var customConfig = {
     jsEntry: 'main.js',
     serverEntryDir: 'sellerCenter',
     devServerPort: 3000
-}
+};
+
+//mock服务器配置
+var mockConfig = {
+  port: 3005,
+  lazyLoadTime: 3000,
+  database: 'mock2easy',
+  doc: 'doc',
+  ignoreField: [],
+  interfaceSuffix: '.json',
+  preferredLanguage: 'en'
+};
 
 var htmlPath = path.resolve(__dirname, customConfig.htmlDir);
 var jsPath = path.resolve(__dirname, customConfig.jsDir);
@@ -86,16 +100,22 @@ var webpackConfig = {
     },
     externals: isDevelopment ? {} : externals,
     module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['es2015', 'stage-2']
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015', 'stage-2']
+                    }
                 }
+            },
+            {
+                test: /\.(jpg|png|jpeg|gif)$/,
+                use: ['url-loader']
             }
-        }]
+        ]
     },
     resolve: {
         extensions: ['.js', '.json']
@@ -104,10 +124,17 @@ var webpackConfig = {
         hot: true,
         inline: true,
         progress: true,
-        contentBase: htmlPath,
+        contentBase: path.resolve(__dirname),
+        compress: true,
         port: customConfig.devServerPort,
         stats: {
             colors: true
+        },
+        proxy:{
+            '/*.json':{
+                target:'http://localhost:3005', // 8005 为mock服务所绑定的端口号
+                secure:false
+            }
         }
     },
     plugins: [
@@ -123,7 +150,7 @@ var webpackConfig = {
         })
     ]
 };
-//当前环境是开发环境：自动启动入口页面，支持热更新，映射原始代码
+//当前环境是开发环境：自动启动入口页面，支持热更新，映射原始代码，开启mock服务
 if (isDevelopment) {
     var cssLoader = {
         test: /\.css$/,
@@ -135,9 +162,14 @@ if (isDevelopment) {
         new HotModuleReplacementPlugin(),
         new NoEmitOnErrorsPlugin(),
         new OpenBrowserPlugin({
-            url: 'http://localhost:' + customConfig.devServerPort + '/' + customConfig.serverEntryDir + '/' + customConfig.htmlEntry
+            url: 'http://localhost:' + customConfig.devServerPort + '/' + customConfig.htmlDir + '/' + customConfig.serverEntryDir + '/' + customConfig.htmlEntry
         })
     ]);
+    mock2easy(mockConfig, function (app) {
+        app.listen(mockConfig.port, function () {
+            console.log('mockServer has started , see : localhost:' + mockConfig.port);
+        });
+});
 }
 //当前环境是生产环境：去掉注释、压缩代码、生成html文件
 else {
@@ -158,6 +190,9 @@ else {
             compress: {
                 warnings: false
             }
+        }),
+        new ngAnnotatePlugin({
+            add: true 
         }),
         new ExtractTextPlugin('[name].bundle.css', {
             allChunks: false

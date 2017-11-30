@@ -1,0 +1,29 @@
+{
+     "interfaceType": "GET",
+     "requiredParameters": [],
+     "responseParameters": [
+          {
+               "id": "01",
+               "kind": "string",
+               "name": "resCode",
+               "rule": "0",
+               "array": [],
+               "nameVerify": "name_1511416017000",
+               "ruleVerify": "rule_1511416017000"
+          },
+          {
+               "id": "02",
+               "kind": "string",
+               "name": "resMsg",
+               "rule": "getSucceed",
+               "array": [],
+               "nameVerify": "name_1511416023000",
+               "ruleVerify": "rule_1511416023000"
+          }
+     ],
+     "reqError": [],
+     "docError": [],
+     "interfaceUrl": "/testGet.json",
+     "interfaceName": "/testGet.json",
+     "lazyLoad": "no"
+}
