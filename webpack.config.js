@@ -38,7 +38,7 @@ var customConfig = {
     jsDir: 'entry',
     jsCommonDir: 'common',
     jsEntry: 'main.js',
-    serverEntryDir: 'sellerCenter',
+    serverEntryDir: 'home',
     devServerPort: 3000
 };
 
@@ -91,7 +91,7 @@ files.forEach(function(filename) {
             }
         }
     })
-    //最基本的webpack配置
+//最基本的webpack配置
 var webpackConfig = {
     entry: entry,
     output: {
@@ -156,6 +156,18 @@ if (isDevelopment) {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
     };
+    var sassLoader = {
+        test: /\.scss$/,
+        use: [{
+                loader: "style-loader" // 将 JS 字符串生成为 style 节点
+            }, {
+                loader: "css-loader" // 将 CSS 转化成 CommonJS 模块
+            }, {
+                loader: "sass-loader" // 将 Sass 编译成 CSS
+            }
+        ]
+    }
+    webpackConfig.module.rules.push(sassLoader);
     webpackConfig.module.rules.push(cssLoader);
     webpackConfig.devtool = 'source-map';
     webpackConfig.plugins = webpackConfig.plugins.concat([
@@ -180,6 +192,18 @@ else {
             use: 'css-loader'
         })
     };
+    var sassLoader = {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+            use: [{
+                loader: 'css-loader'
+            }, {
+                loader: 'sass-loader'
+            }],
+            fallback: 'style-loader'
+        })
+    }
+    webpackConfig.module.rules.push(sassLoader);
     webpackConfig.module.rules.push(cssLoader);
     webpackConfig.plugins = webpackConfig.plugins.concat([
         new UglifyJsPlugin({

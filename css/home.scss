@@ -1,0 +1,28 @@
+body {
+	background-color: #ffffff;
+}
+
+$imageWidth: 748px;
+$imageHeight: 295px;
+$margin-top: 40px;
+$font-size: 40px;
+
+.container {
+	width: $imageWidth;
+	height: $imageHeight;
+	margin: 0 auto;
+}
+
+.home-title {
+	color: #333333;
+	font-size: $font-size;
+	text-align: center;
+	margin-top: $margin-top;
+}
+
+.home-instruction {
+	@extend .home-title;
+	margin-top: $margin-top;
+	font-size: 20px;
+}
+
