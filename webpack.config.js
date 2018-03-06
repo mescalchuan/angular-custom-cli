@@ -76,17 +76,16 @@ files.forEach(function(filename) {
             var template = path.resolve(__dirname, customConfig.htmlDir, filename, customConfig.htmlEntry);
             entry[entryJSKey] = path.join(jsPath, filename, '/' + customConfig.jsEntry);
             if (!isDevelopment) {
-                let htmlPlugin = {
-                    filename: template,
+                var htmlPlugin = {
+                    filename: '../build/' + filename + '/' + customConfig.htmlEntry,
                     template: template,
-                    chunks: [],
+                    chunks: ['vendor', entryJSKey],
                     inject: true,
                     chunksSortMode: 'manual',
                     xhtml: true,
                     showErrors: true,
                     minify: false
                 };
-                htmlPlugin.chunks = ['vendor', entryJSKey];
                 htmlPluginArr.push(new HtmlWebpackPlugin(htmlPlugin));
             }
         }
@@ -94,10 +93,6 @@ files.forEach(function(filename) {
 //最基本的webpack配置
 var webpackConfig = {
     entry: entry,
-    output: {
-        path: jsPath,
-        filename: isDevelopment ? '[name].__bundle.js' : '[name].bundle.js',
-    },
     externals: isDevelopment ? {} : externals,
     module: {
         rules: [
@@ -152,6 +147,10 @@ var webpackConfig = {
 };
 //当前环境是开发环境：自动启动入口页面，支持热更新，映射原始代码，开启mock服务
 if (isDevelopment) {
+    webpackConfig.output = {
+        path: path.resolve(__dirname, customConfig.jsDir),
+        filename: '[name].__bundle.js',
+    };
     var cssLoader = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
@@ -181,10 +180,14 @@ if (isDevelopment) {
         app.listen(mockConfig.port, function () {
             console.log('mockServer has started , see : localhost:' + mockConfig.port);
         });
-});
+    });
 }
 //当前环境是生产环境：去掉注释、压缩代码、生成html文件
 else {
+    webpackConfig.output = {
+        path: path.resolve(__dirname, 'build'),
+        filename: '[name].bundle.js',
+    }
     var cssLoader = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
