@@ -77,6 +77,7 @@ files.forEach(function(filename) {
             entry[entryJSKey] = path.join(jsPath, filename, '/' + customConfig.jsEntry);
             if (!isDevelopment) {
                 var htmlPlugin = {
+                    //htmlPlugin的filename的参考路径是output的path
                     filename: '../build/' + filename + '/' + customConfig.htmlEntry,
                     template: template,
                     chunks: ['vendor', entryJSKey],
