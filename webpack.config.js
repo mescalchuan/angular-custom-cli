@@ -70,27 +70,27 @@ var htmlPluginArr = [];
  */
 var files = fs.readdirSync(jsPath);
 files.forEach(function(filename) {
-        var stats = fs.statSync(path.join(jsPath, filename));
-        if (stats.isDirectory()) {
-            var entryJSKey = filename + '/' + customConfig.jsEntry.split('.js')[0];
-            var template = path.resolve(__dirname, customConfig.htmlDir, filename, customConfig.htmlEntry);
-            entry[entryJSKey] = path.join(jsPath, filename, '/' + customConfig.jsEntry);
-            if (!isDevelopment) {
-                var htmlPlugin = {
-                    //htmlPlugin的filename的参考路径是output的path
-                    filename: '../build/' + filename + '/' + customConfig.htmlEntry,
-                    template: template,
-                    chunks: ['vendor', entryJSKey],
-                    inject: true,
-                    chunksSortMode: 'manual',
-                    xhtml: true,
-                    showErrors: true,
-                    minify: false
-                };
-                htmlPluginArr.push(new HtmlWebpackPlugin(htmlPlugin));
-            }
+    var stats = fs.statSync(path.join(jsPath, filename));
+    if (stats.isDirectory()) {
+        var entryJSKey = filename + '/' + customConfig.jsEntry.split('.js')[0];
+        var template = path.resolve(__dirname, customConfig.htmlDir, filename, customConfig.htmlEntry);
+        entry[entryJSKey] = path.join(jsPath, filename, '/' + customConfig.jsEntry);
+        if (!isDevelopment) {
+            var htmlPlugin = {
+                //htmlPlugin的filename的参考路径是output的path
+                filename: '../build/' + filename + '/' + customConfig.htmlEntry,
+                template: template,
+                chunks: ['vendor', entryJSKey],
+                inject: true,
+                chunksSortMode: 'manual',
+                xhtml: true,
+                showErrors: true,
+                minify: false
+            };
+            htmlPluginArr.push(new HtmlWebpackPlugin(htmlPlugin));
         }
-    })
+    }
+})
 //最基本的webpack配置
 var webpackConfig = {
     entry: entry,
@@ -154,18 +154,11 @@ if (isDevelopment) {
     };
     var cssLoader = {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['style-loader', 'css-loader', 'postcss-loader']
     };
     var sassLoader = {
         test: /\.scss$/,
-        use: [{
-                loader: "style-loader" // 将 JS 字符串生成为 style 节点
-            }, {
-                loader: "css-loader" // 将 CSS 转化成 CommonJS 模块
-            }, {
-                loader: "sass-loader" // 将 Sass 编译成 CSS
-            }
-        ]
+        use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
     }
     webpackConfig.module.rules.push(sassLoader);
     webpackConfig.module.rules.push(cssLoader);
@@ -193,17 +186,13 @@ else {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
-            use: 'css-loader'
+            use: ['css-loader', 'postcss-loader']
         })
     };
     var sassLoader = {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
-            use: [{
-                loader: 'css-loader'
-            }, {
-                loader: 'sass-loader'
-            }],
+            use: ['css-loader', 'postcss-loader', 'sass-loader'],
             fallback: 'style-loader'
         })
     }

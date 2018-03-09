@@ -1,19 +1,18 @@
 import angular from 'angular';
-import {homeInstruction} from '../../common/app';
+import { instruction } from '../../common/app';
 import '../../css/home.scss';
 
 const homeCtrl = $scope => {
-	$scope.pageInfo = "Hello Angular";
-	console.log(homeInstruction);
+	$scope.pageInfo = 'Hello Angular';
 }
 const helloNG = () => ({
 	restrict:'EACM',
-	template:`<p class="home-title" >{{pageInfo}}</p>`
-})
+	template:`<p class="home-title">{{pageInfo}}</p>`
+});
 
 angular.module('home', [])
 	.controller('homeCtrl',['$scope', 
 		$scope => homeCtrl($scope)
 	])
 	.directive('helloNg', helloNG)
-	.directive('ngText', homeInstruction);
+	.directive('ngText', instruction);
