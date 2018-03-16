@@ -9,11 +9,14 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 //解决angular压缩后代码无法运行的问题
 var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+//提高loader的解析速度
+var HappyPack = require('happypack');
 var HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 var NoEmitOnErrorsPlugin = webpack.NoEmitOnErrorsPlugin;
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var DefinePlugin = webpack.DefinePlugin;
+var DllReferencePlugin = webpack.DllReferencePlugin;
 
 //是否为开发环境
 var isDevelopment = process.env.NODE_ENV !== 'production';
@@ -23,15 +26,16 @@ var externals = {
         //框架文件名：import名
         'angular': 'angular'
     }
-    /*
-     *   配置html文件路径  
-     *   每个页面的入口html名称
-     *   配置js文件路径
-     *   通用js文件夹
-     *   每个页面的入口js
-     *   默认打开的页面
-     *   端口号
-     */
+
+/**
+ * 配置html文件路径
+ * 每个页面的入口html名称
+ * 配置js文件路径
+ * 通用js文件夹
+ * 每个页面的入口js
+ * 默认打开的页面
+ * 端口号
+ */
 var customConfig = {
     htmlDir: 'pages',
     htmlEntry: 'index.html',
@@ -63,7 +67,7 @@ var entry = {
 };
 var htmlPluginArr = [];
 
-/*
+/**
  * 遍历js文件下的所有文件夹，在每个文件夹里面生成打包后的js文件
  * 开发人员在生产环境下手动引入打包后的文件并不现实
  * 使用html-webpack-plain自动生成一个引入了所有打包文件的新html（覆盖原有的）
@@ -100,12 +104,7 @@ var webpackConfig = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['es2015', 'stage-2']
-                    }
-                }
+                use: ['happypack/loader?id=babel']
             },
             {
                 test: /\.(jpg|png|jpeg|gif)$/,
@@ -139,9 +138,18 @@ var webpackConfig = {
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV),
             }
         }),
+        new HappyPack({
+            id: 'babel',
+            loaders: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['es2015', 'stage-2']
+                }
+            }]
+        }),
         new CommonsChunkPlugin({
             name: ['vendor'],
-            filename: isDevelopment ? 'vendor.__bundle.js' : 'vendor.bundle.js',
+            filename: isDevelopment ? 'vendor.__bundle.js' : 'vendor_[chunkhash:8].bundle.js',
             minChunks: Infinity
         })
     ]
@@ -150,7 +158,7 @@ var webpackConfig = {
 if (isDevelopment) {
     webpackConfig.output = {
         path: path.resolve(__dirname, customConfig.jsDir),
-        filename: '[name].__bundle.js',
+        filename: '[name].__bundle.js'
     };
     var cssLoader = {
         test: /\.css$/,
@@ -166,6 +174,10 @@ if (isDevelopment) {
     webpackConfig.plugins = webpackConfig.plugins.concat([
         new HotModuleReplacementPlugin(),
         new NoEmitOnErrorsPlugin(),
+        new DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./entry/angular.manifest.json'),
+        }),
         new OpenBrowserPlugin({
             url: 'http://localhost:' + customConfig.devServerPort + '/' + customConfig.htmlDir + '/' + customConfig.serverEntryDir + '/' + customConfig.htmlEntry
         })
@@ -180,7 +192,7 @@ if (isDevelopment) {
 else {
     webpackConfig.output = {
         path: path.resolve(__dirname, 'build'),
-        filename: '[name].bundle.js',
+        filename: '[name]_[chunkhash:8].bundle.js',
     }
     var cssLoader = {
         test: /\.css$/,
@@ -203,15 +215,19 @@ else {
             minimize: true,
             output: {
                 comments: false,
+                beautify: false
             },
             compress: {
-                warnings: false
+                warnings: false,
+                drop_console: true,
+                collapse_vars: true,
+                reduce_vars: true
             }
         }),
         new ngAnnotatePlugin({
-            add: true 
+            add: true
         }),
-        new ExtractTextPlugin('[name].bundle.css', {
+        new ExtractTextPlugin('[name]_[chunkhash:8].bundle.css', {
             allChunks: false
         }),
         new OptimizeCSSPlugin()
