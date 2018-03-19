@@ -201,7 +201,7 @@ else {
         path: path.resolve(__dirname, 'build'),
         filename: '[name]_[chunkhash:8].bundle.js',
         //异步加载模块
-        chunkFilename: '[id]_[chunkhash:8].js',
+        chunkFilename: '[id]_[chunkhash:8].bundle.js',
         publicPath: '../'
     }
     var cssLoader = {
