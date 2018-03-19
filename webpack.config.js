@@ -107,8 +107,12 @@ var webpackConfig = {
                 use: ['happypack/loader?id=babel']
             },
             {
-                test: /\.(jpg|png|jpeg|gif)$/,
-                use: ['url-loader']
+                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 8192,
+                    name: isDevelopment ? '[name]_[hash:8].[ext]' : '../image/[name].[ext]'
+                }
             }
         ]
     },
@@ -158,7 +162,10 @@ var webpackConfig = {
 if (isDevelopment) {
     webpackConfig.output = {
         path: path.resolve(__dirname, customConfig.jsDir),
-        filename: '[name].__bundle.js'
+        filename: '[name].__bundle.js',
+        chunkFilename: '[id].__bundle.js',
+        //开发环境下是否开启了本地服务器？否：是
+        publicPath: process.env.NODE_ENV ? '../../entry/' : '/'
     };
     var cssLoader = {
         test: /\.css$/,
@@ -193,6 +200,9 @@ else {
     webpackConfig.output = {
         path: path.resolve(__dirname, 'build'),
         filename: '[name]_[chunkhash:8].bundle.js',
+        //异步加载模块
+        chunkFilename: '[id]_[chunkhash:8].js',
+        publicPath: '../'
     }
     var cssLoader = {
         test: /\.css$/,
