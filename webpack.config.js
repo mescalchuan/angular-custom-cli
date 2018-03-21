@@ -23,9 +23,9 @@ var isDevelopment = process.env.NODE_ENV !== 'production';
 //externals配置的对象在生产环境下会自动引入CDN的对象，不会将node_modules下的文件打包进来
 //在开发环境下，会自动将node_modules里的文件打包
 var externals = {
-        //框架文件名：import名
-        'angular': 'angular'
-    }
+    //框架文件名：import名
+    'angular': 'angular'
+}
 
 /**
  * 配置html文件路径
@@ -48,13 +48,13 @@ var customConfig = {
 
 //mock服务器配置
 var mockConfig = {
-  port: 3005,
-  lazyLoadTime: 3000,
-  database: 'mock2easy',
-  doc: 'doc',
-  ignoreField: [],
-  interfaceSuffix: '.json',
-  preferredLanguage: 'en'
+    port: 3005,
+    lazyLoadTime: 3000,
+    database: 'mock2easy',
+    doc: 'doc',
+    ignoreField: [],
+    interfaceSuffix: '.json',
+    preferredLanguage: 'en'
 };
 
 var htmlPath = path.resolve(__dirname, customConfig.htmlDir);
