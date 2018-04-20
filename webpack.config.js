@@ -23,7 +23,7 @@ var isDevelopment = process.env.NODE_ENV !== 'production';
 //externals配置的对象在生产环境下会自动引入CDN的对象，不会将node_modules下的文件打包进来
 //在开发环境下，会自动将node_modules里的文件打包
 var externals = {
-    //框架文件名：import名
+    //import angular(value) from 'angular'(key)
     'angular': 'angular'
 }
 
