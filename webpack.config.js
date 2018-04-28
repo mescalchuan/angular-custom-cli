@@ -221,6 +221,9 @@ else {
     webpackConfig.module.rules.push(sassLoader);
     webpackConfig.module.rules.push(cssLoader);
     webpackConfig.plugins = webpackConfig.plugins.concat([
+        new ngAnnotatePlugin({
+            add: true
+        }),
         new UglifyJsPlugin({
             minimize: true,
             output: {
@@ -233,9 +236,6 @@ else {
                 collapse_vars: true,
                 reduce_vars: true
             }
-        }),
-        new ngAnnotatePlugin({
-            add: true
         }),
         new ExtractTextPlugin('[name]_[chunkhash:8].bundle.css', {
             allChunks: false
