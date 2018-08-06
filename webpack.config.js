@@ -250,7 +250,7 @@ else {
         new DelDevAssets({
             outputPath: path.join(__dirname, "build"),
             htmlName: "index.html",
-            delNames: ["vendor.__bundle.js", "main.__bundle.js", "angular.dll.js"]
+            delNames: ['angular.dll.js', 'vendor.__bundle.js', 'main.__bundle.js']
         })
     ]);
     webpackConfig.plugins = webpackConfig.plugins.concat(htmlPluginArr);
