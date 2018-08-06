@@ -11,7 +11,7 @@ var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 //提高loader的解析速度
 var HappyPack = require('happypack');
-//用于在开发环境下自动删除html引入的内存中的文件
+//用于在生产环境下自动删除html引入的内存中的文件
 var DelDevAssets = require('del-dev-assets');
 var HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
