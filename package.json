@@ -33,6 +33,8 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "css-loader": "^0.28.7",
+    "del": "^3.0.0",
+    "del-dev-assets": "^1.0.0",
     "file-loader": "^1.1.11",
     "node-sass": "^4.7.2",
     "postcss-loader": "^2.1.1",

@@ -11,12 +11,18 @@ var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 var ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 //提高loader的解析速度
 var HappyPack = require('happypack');
+//用于在开发环境下自动删除html引入的内存中的文件
+var DelDevAssets = require('del-dev-assets');
 var HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 var NoEmitOnErrorsPlugin = webpack.NoEmitOnErrorsPlugin;
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var DefinePlugin = webpack.DefinePlugin;
 var DllReferencePlugin = webpack.DllReferencePlugin;
+
+// 删除build目录
+var del = require('del');
+del(['./build/*']);
 
 //是否为开发环境
 var isDevelopment = process.env.NODE_ENV !== 'production';
@@ -240,7 +246,12 @@ else {
         new ExtractTextPlugin('[name]_[chunkhash:8].bundle.css', {
             allChunks: false
         }),
-        new OptimizeCSSPlugin()
+        new OptimizeCSSPlugin(),
+        new DelDevAssets({
+            outputPath: path.join(__dirname, "build"),
+            htmlName: "index.html",
+            delNames: ["vendor.__bundle.js", "main.__bundle.js", "angular.dll.js"]
+        })
     ]);
     webpackConfig.plugins = webpackConfig.plugins.concat(htmlPluginArr);
 }
